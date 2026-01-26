@@ -60,6 +60,14 @@ defmodule Ats.Jobs do
     Repo.all(Job) |> Repo.preload(:profession)
   end
 
+  # Public-facing job listings should only show published jobs
+  @spec list_published_jobs() :: [%Job{}]
+  def list_published_jobs do
+    from(j in Job, where: j.status == :published)
+    |> Repo.all()
+    |> Repo.preload(:profession)
+  end
+
   @doc """
   Gets a single job.
 

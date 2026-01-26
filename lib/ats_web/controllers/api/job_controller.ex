@@ -9,9 +9,17 @@ defmodule AtsWeb.Api.JobController do
   @doc """
   List all jobs.
   """
-  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
+@spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
-    jobs = Jobs.list_jobs()
+
+  # Authorised users see all jobs; public users see only published
+    jobs =
+      if conn.assigns[:current_user] do
+        Jobs.list_jobs()
+      else
+        Jobs.list_published_jobs()
+      end
+
     render(conn, :index, jobs: jobs)
   end
 

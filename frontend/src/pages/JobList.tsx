@@ -23,7 +23,16 @@ export const JobList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/api/jobs")
+    const bearerToken = Cookies.get("user-token");
+    const csrfToken = Cookies.get("technical-test-csrf-token");
+
+    // Include auth token to fetch all jobs (including drafts) when logged in
+    fetch("/api/jobs", {
+      headers: {
+        ...(bearerToken && { Authorization: `Bearer ${bearerToken}` }),
+        ...(csrfToken && { "x-csrf-token": csrfToken }),
+      },
+    })
       .then((res) => res.json())
       .then((response: { data: Job[] }) => {
         setJobs(response.data);
