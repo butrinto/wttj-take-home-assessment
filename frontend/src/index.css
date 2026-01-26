@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@import "welcome-ui/theme.css";
+
+@import "welcome-ui/Button.css";
+@import "welcome-ui/InputText.css";
+@import "welcome-ui/Field.css";
+@import "welcome-ui/Icon.css";
+@import "welcome-ui/variantIcon.css";
+@import "welcome-ui/Hint.css";
+@import "welcome-ui/Label.css";
+@import "welcome-ui/Link.css";
+@import "welcome-ui/Text.css";
