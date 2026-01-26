@@ -68,6 +68,50 @@ defmodule Ats.Jobs do
     |> Repo.preload(:profession)
   end
 
+  @spec list_jobs(map()) :: [%Job{}]
+  def list_jobs(params) when is_map(params) do
+    Job
+    |> filter_by_params(params)
+    |> Repo.all()
+    |> Repo.preload(:profession)
+  end
+
+  @spec list_published_jobs(map()) :: [%Job{}]
+  def list_published_jobs(params) when is_map(params) do
+    from(j in Job, where: j.status == :published)
+    |> filter_by_params(params)
+    |> Repo.all()
+    |> Repo.preload(:profession)
+  end
+
+  defp filter_by_params(query, params) do
+    query
+    |> filter_by_title(params["title"])
+    |> filter_by_office(params["office"])
+    |> filter_by_work_mode(params["work_mode"])
+    |> filter_by_contract_type(params["contract_type"])
+  end
+
+  defp filter_by_title(query, nil), do: query
+  defp filter_by_title(query, title) when is_binary(title) do
+    from j in query, where: ilike(j.title, ^"%#{title}%")
+  end
+
+  defp filter_by_office(query, nil), do: query
+  defp filter_by_office(query, office) when is_binary(office) do
+    from j in query, where: ilike(j.office, ^"%#{office}%")
+  end
+
+  defp filter_by_work_mode(query, nil), do: query
+  defp filter_by_work_mode(query, work_mode) when is_binary(work_mode) do
+    from j in query, where: j.work_mode == ^String.to_existing_atom(work_mode)
+  end
+
+  defp filter_by_contract_type(query, nil), do: query
+  defp filter_by_contract_type(query, contract_type) when is_binary(contract_type) do
+    from j in query, where: j.contract_type == ^String.to_existing_atom(contract_type)
+  end
+
   @doc """
   Gets a single job.
 

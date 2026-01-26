@@ -9,15 +9,14 @@ defmodule AtsWeb.Api.JobController do
   @doc """
   List all jobs.
   """
-@spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def index(conn, _params) do
-
-  # Authorised users see all jobs; public users see only published
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def index(conn, params) do
+    # Authorised users see all jobs; public users see only published. Both can filter by search params.
     jobs =
       if conn.assigns[:current_user] do
-        Jobs.list_jobs()
+        Jobs.list_jobs(params)
       else
-        Jobs.list_published_jobs()
+        Jobs.list_published_jobs(params)
       end
 
     render(conn, :index, jobs: jobs)
