@@ -13,3 +13,20 @@
 @import "welcome-ui/Text.css";
 @import "welcome-ui/Modal.css";
 @import "welcome-ui/Accordion.css";
+@import "welcome-ui/Select.css";
+@import "welcome-ui/Textarea.css";
+
+.modal-scroll {
+  max-height: 60vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}

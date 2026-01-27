@@ -67,16 +67,18 @@ export const JobModal = ({
             </div>
           </Modal.Header>
 
-          <Modal.Body>
-            {children}
-            <div className="mt-lg">
-              <Accordion store={accordionApplications} title="Applications">
-                <div>Applications list coming soon...</div>
-              </Accordion>
+          <Modal.Body style={{ padding: "24px" }}>
+            <div className="modal-scroll">
+              {children}
+              <div className="mt-lg">
+                <Accordion store={accordionApplications} title="Applications">
+                  <div>Applications list coming soon...</div>
+                </Accordion>
 
-              <Accordion store={accordionHistory} title="Change History">
-                <div>Change history coming soon...</div>
-              </Accordion>
+                <Accordion store={accordionHistory} title="Change History">
+                  <div>Change history coming soon...</div>
+                </Accordion>
+              </div>
             </div>
           </Modal.Body>
         </Modal.Content>
@@ -88,7 +90,9 @@ export const JobModal = ({
   return (
     <Modal ariaLabel={title || "Job Modal"} store={modal}>
       <Modal.Content>
-        <Modal.Body title={title}>{children}</Modal.Body>
+        <Modal.Body title={title} style={{ padding: "24px" }}>
+          <div className="modal-scroll">{children}</div>
+        </Modal.Body>
       </Modal.Content>
     </Modal>
   );
