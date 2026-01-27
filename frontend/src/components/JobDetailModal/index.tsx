@@ -1,6 +1,8 @@
 import { JobModal } from "../JobModal";
 import { Text } from "welcome-ui/Text";
+import { Button } from "welcome-ui/Button";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Job {
   id: number;
@@ -25,6 +27,7 @@ export const JobDetailModal = ({
   onClose,
   isAuthenticated,
 }: JobDetailModalProps) => {
+  const navigate = useNavigate();
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +67,14 @@ export const JobDetailModal = ({
       <Text className="mb-sm">
         <strong>Status:</strong> {job?.status}
       </Text>
+
+      {!isAuthenticated && (
+        <div className="flex justify-end mt-lg">
+          <Button onClick={() => navigate(`/jobs/${jobId}/apply`)}>
+            Apply for this Job
+          </Button>
+        </div>
+      )}
     </div>
   );
 
