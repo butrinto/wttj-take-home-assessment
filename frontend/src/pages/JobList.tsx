@@ -4,6 +4,7 @@ import { Button } from "welcome-ui/Button";
 import { Text } from "welcome-ui/Text";
 import Cookies from "js-cookie";
 import { logout } from "../api/logout";
+import { SearchBar } from "../components/SearchBar";
 
 interface Job {
   id: string;
@@ -21,6 +22,7 @@ export const JobList = () => {
   const [hasBearerToken, setHasBearerToken] = useState<boolean>(false);
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const bearerToken = Cookies.get("user-token");
@@ -74,6 +76,12 @@ export const JobList = () => {
     }
   }, []);
 
+  const filteredJobs = jobs.filter(
+    (job) =>
+      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.office.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text color="red">Error: {error}</Text>;
 
@@ -117,8 +125,15 @@ export const JobList = () => {
         Job Listings
       </Text>
 
+      <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search by title or location..."
+      />
+
+      <div></div>
       <div>
-        {jobs.map((job) => (
+        {filteredJobs.map((job) => (
           <div key={job.id} className="p-md mb-md bg-neutral-20">
             <div className="flex items-center justify-between">
               <Link to={`/jobs/${job.id}`}>
