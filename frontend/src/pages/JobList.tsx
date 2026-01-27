@@ -8,6 +8,7 @@ import { SearchBar } from "../components/SearchBar";
 import { JobDetailModal } from "../components/JobDetailModal";
 import { JobCreationModal } from "../components/JobCreationModal";
 import { JobApplyModal } from "../components/JobApplyModal";
+import { JobEditModal } from "../components/JobEditModal";
 
 interface Job {
   id: string;
@@ -94,6 +95,7 @@ export const JobList = () => {
   const isCreatingJob = window.location.pathname === "/jobs/new";
   const applyJobId =
     window.location.pathname.match(/\/jobs\/(\d+)\/apply/)?.[1];
+  const editJobId = window.location.pathname.match(/\/jobs\/(\d+)\/edit/)?.[1];
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text color="red">Error: {error}</Text>;
@@ -199,6 +201,11 @@ export const JobList = () => {
       <JobApplyModal
         jobId={applyJobId || ""}
         isOpen={!!applyJobId}
+        onClose={handleCloseModal}
+      />
+      <JobEditModal
+        jobId={editJobId || ""}
+        isOpen={!!editJobId}
         onClose={handleCloseModal}
       />
     </div>

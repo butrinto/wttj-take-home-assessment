@@ -1,11 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { JobList } from "./pages/JobList";
-import { JobDetail } from "./pages/JobDetail";
-import { CreateJob } from "./pages/CreateJob";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
 import { SignOut } from "./pages/SignOut";
-import { Apply } from "./pages/Apply";
 
 import "./index.css";
 
@@ -21,6 +18,7 @@ export const App = () => {
         <Route path="/jobs/:id" element={<JobList />} />
         <Route path="/jobs/new" element={<JobList />} />
         <Route path="/jobs/:jobId/apply" element={<JobList />} />
+        <Route path="/jobs/:id/edit" element={<JobList />} />
       </Routes>
     </BrowserRouter>
   );
