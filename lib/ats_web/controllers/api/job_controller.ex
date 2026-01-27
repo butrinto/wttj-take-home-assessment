@@ -46,6 +46,17 @@ defmodule AtsWeb.Api.JobController do
   end
 
   @doc """
+  Get applications for a job by ID.
+  """
+  @spec applications(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def applications(conn, %{"id" => id}) do
+    job = Jobs.get_job!(id)
+    applicants = Ats.Repo.preload(job, applicants: [:candidate]).applicants
+
+    render(conn, :applications, applicants: applicants)
+  end
+
+  @doc """
   Update a job by ID.
 
   Expects job parameters in the request body. Returns the updated job.

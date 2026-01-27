@@ -3,6 +3,7 @@ import { Text } from "welcome-ui/Text";
 import { Button } from "welcome-ui/Button";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 interface Job {
   id: number;
@@ -31,6 +32,7 @@ export const JobDetailModal = ({
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [applications, setApplications] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isOpen || !jobId) return;
@@ -46,7 +48,19 @@ export const JobDetailModal = ({
         setError(err.message);
         setLoading(false);
       });
-  }, [jobId, isOpen]);
+
+    // Fetch applications if authenticated
+    if (isAuthenticated) {
+      fetch(`/api/jobs/${jobId}/applications`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("user-token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((response) => setApplications(response.data || []))
+        .catch(() => setApplications([]));
+    }
+  }, [jobId, isOpen, isAuthenticated]);
 
   if (!isOpen) return null;
 
@@ -87,6 +101,7 @@ export const JobDetailModal = ({
       job={job}
       loading={loading}
       error={error}
+      applications={applications}
     >
       {jobDetailsContent}
     </JobModal>

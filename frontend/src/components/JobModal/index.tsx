@@ -23,6 +23,7 @@ interface JobModalProps {
   job?: Job | null;
   loading?: boolean;
   error?: string | null;
+  applications?: any[];
 }
 
 export const JobModal = ({
@@ -31,6 +32,7 @@ export const JobModal = ({
   children,
   title,
   isAuthenticated = false,
+  applications = [],
 }: JobModalProps) => {
   const navigate = useNavigate();
   const modal = useModal({
@@ -72,7 +74,15 @@ export const JobModal = ({
               {children}
               <div className="mt-lg">
                 <Accordion store={accordionApplications} title="Applications">
-                  <div>Applications list coming soon...</div>
+                  {applications.length === 0 ? (
+                    <div>No applications yet</div>
+                  ) : (
+                    <ul>
+                      {applications.map((app: any) => (
+                        <li key={app.id}>{app.candidate_name}</li>
+                      ))}
+                    </ul>
+                  )}
                 </Accordion>
 
                 <Accordion store={accordionHistory} title="Change History">

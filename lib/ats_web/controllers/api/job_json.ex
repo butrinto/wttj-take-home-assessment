@@ -20,9 +20,28 @@ defmodule AtsWeb.Api.JobJSON do
     %{data: data(job)}
   end
 
+  @doc """
+  Renders applications for a job.
+  """
+  @spec applications(%{applicants: [map()]}) :: %{data: [map()]}
+  def applications(%{applicants: applicants}) do
+    %{
+      data: Enum.map(applicants, fn applicant ->
+        %{
+          id: applicant.id,
+          application_date: applicant.application_date,
+          salary_expectation: applicant.salary_expectation,
+          status: applicant.status,
+          candidate_name: applicant.candidate.full_name,
+          candidate_email: applicant.candidate.email
+        }
+      end)
+    }
+  end
+
   @spec data(%Job{}) :: map()
   defp data(%Job{} = job) do
-%{
+    %{
       id: job.id,
       title: job.title,
       description: job.description,
