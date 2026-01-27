@@ -6,6 +6,7 @@ import { Textarea } from "welcome-ui/Textarea";
 import { Button } from "welcome-ui/Button";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import { updateJob } from "../../api/update";
 
 interface Job {
   id: number;
@@ -34,6 +35,8 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
     work_mode: "",
     status: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen || !jobId) return;
@@ -60,10 +63,27 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form data:", formData);
-    // API call here, testing FE first before tether
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const token = Cookies.get("user-token");
+      if (!token) {
+        throw new Error("Not authenticated");
+      }
+
+      await updateJob(jobId, formData, token);
+
+      // Success - close modal and refresh
+      onClose();
+      window.location.reload();
+    } catch (err: any) {
+      setError(err.message || "Failed to update job");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -140,11 +160,22 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
           />
         </Field>
 
+        {error && (
+          <div className="mb-md" style={{ color: "red" }}>
+            {error}
+          </div>
+        )}
+
         <div className="flex gap-md mt-lg">
-          <Button type="submit" variant="primary">
-            Save Changes
+          <Button type="submit" variant="primary" disabled={submitting}>
+            {submitting ? "Saving..." : "Save Changes"}
           </Button>
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            disabled={submitting}
+          >
             Cancel
           </Button>
         </div>
