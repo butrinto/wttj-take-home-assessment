@@ -86,5 +86,51 @@ defmodule Ats.JobsTest do
       job = job_fixture()
       assert %Ecto.Changeset{} = Jobs.change_job(job)
     end
+
+    test "list_jobs/1 filters by title" do
+      job1 = job_fixture(%{title: "Backend Engineer"})
+      job2 = job_fixture(%{title: "Frontend Developer"})
+
+      results = Jobs.list_jobs(%{"title" => "backend"})
+      job_ids = Enum.map(results, & &1.id)
+
+      assert job1.id in job_ids
+      refute job2.id in job_ids
+    end
+
+    test "list_jobs/1 filters by office" do
+      job1 = job_fixture(%{office: "Paris"})
+      job2 = job_fixture(%{office: "London"})
+
+      results = Jobs.list_jobs(%{"office" => "Paris"})
+      job_ids = Enum.map(results, & &1.id)
+
+      assert job1.id in job_ids
+      refute job2.id in job_ids
+    end
+
+    test "list_jobs/1 filters by multiple params" do
+      job1 = job_fixture(%{title: "Backend Engineer", office: "Paris"})
+      job2 = job_fixture(%{title: "Backend Engineer", office: "London"})
+      job3 = job_fixture(%{title: "Frontend Developer", office: "Paris"})
+
+      results = Jobs.list_jobs(%{"title" => "backend", "office" => "Paris"})
+      job_ids = Enum.map(results, & &1.id)
+
+      assert job1.id in job_ids
+      refute job2.id in job_ids
+      refute job3.id in job_ids
+    end
+
+    test "list_published_jobs/1 filters by title and status" do
+      published = job_fixture(%{title: "Backend Engineer", status: :published})
+      draft = job_fixture(%{title: "Backend Engineer", status: :draft})
+
+      results = Jobs.list_published_jobs(%{"title" => "backend"})
+      job_ids = Enum.map(results, & &1.id)
+
+      assert published.id in job_ids
+      refute draft.id in job_ids
+    end
   end
 end
