@@ -19,8 +19,8 @@ export const App = () => {
 
         <Route path="/" element={<JobList />} />
         <Route path="/jobs/:id" element={<JobList />} />
+        <Route path="/jobs/new" element={<JobList />} />
         <Route path="/jobs/:jobId/apply" element={<Apply />} />
-        <Route path="/jobs/new" element={<CreateJob />} />
       </Routes>
     </BrowserRouter>
   );

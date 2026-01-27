@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import { logout } from "../api/logout";
 import { SearchBar } from "../components/SearchBar";
 import { JobDetailModal } from "../components/JobDetailModal";
+import { JobCreationModal } from "../components/JobCreationModal";
 
 interface Job {
   id: string;
@@ -88,6 +89,8 @@ export const JobList = () => {
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.office.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  const isCreatingJob = window.location.pathname === "/jobs/new";
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text color="red">Error: {error}</Text>;
@@ -178,6 +181,7 @@ export const JobList = () => {
         onClose={handleCloseModal}
         isAuthenticated={hasBearerToken}
       />
+      <JobCreationModal isOpen={isCreatingJob} onClose={handleCloseModal} />
     </div>
   );
 };
