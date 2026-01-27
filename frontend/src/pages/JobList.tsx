@@ -168,7 +168,7 @@ export const JobList = () => {
               </Button>
             </div>
             <Text className="mt-sm">{job.description}</Text>
-            <Text variant="sm">
+            <Text variant="sm" className="mt-auto">
               Type: {job.contract_type} | Office: {job.office}
             </Text>
           </div>
