@@ -34,6 +34,17 @@ export const JobList = () => {
     navigate("/");
   };
 
+  const formatContractType = (type: string) => {
+    const types: { [key: string]: string } = {
+      FULL_TIME: "Full-Time",
+      PART_TIME: "Part-Time",
+      TEMPORARY: "Temporary",
+      FREELANCE: "Freelance",
+      INTERNSHIP: "Internship",
+    };
+    return types[type] || type;
+  };
+
   useEffect(() => {
     const bearerToken = Cookies.get("user-token");
     const csrfToken = Cookies.get("technical-test-csrf-token");
@@ -185,7 +196,8 @@ export const JobList = () => {
             </div>
             <Text className="mt-sm">{job.description}</Text>
             <Text variant="sm" className="mt-auto">
-              Type: {job.contract_type} | Office: {job.office}
+              Type: {formatContractType(job.contract_type)} | Office:{" "}
+              {job.office}
             </Text>
           </div>
         ))}

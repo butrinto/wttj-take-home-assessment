@@ -42,12 +42,12 @@ def applications(%{applicants: applicants}) do
   end
 
   @spec data(%Job{}) :: map()
-  defp data(%Job{} = job) do
+defp data(%Job{} = job) do
     %{
       id: job.id,
       title: job.title,
       description: job.description,
-      contract_type: Jobs.contract_type(job),
+      contract_type: job.contract_type,
       office: job.office,
       status: job.status,
       work_mode: job.work_mode,
