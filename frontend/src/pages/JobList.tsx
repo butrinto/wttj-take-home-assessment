@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "welcome-ui/Button";
 import { Text } from "welcome-ui/Text";
 import Cookies from "js-cookie";
 import { logout } from "../api/logout";
 import { SearchBar } from "../components/SearchBar";
+import { JobDetailModal } from "../components/JobDetailModal";
 
 interface Job {
   id: string;
@@ -16,6 +17,8 @@ interface Job {
 }
 
 export const JobList = () => {
+  const { id } = useParams<{ id?: string }>();
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +26,10 @@ export const JobList = () => {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+
+  const handleCloseModal = () => {
+    navigate("/");
+  };
 
   useEffect(() => {
     const bearerToken = Cookies.get("user-token");
@@ -136,9 +143,12 @@ export const JobList = () => {
         {filteredJobs.map((job) => (
           <div key={job.id} className="p-md mb-md bg-neutral-20">
             <div className="flex items-center justify-between">
-              <Link to={`/jobs/${job.id}`}>
+              <div
+                onClick={() => navigate(`/jobs/${job.id}`)}
+                style={{ cursor: "pointer" }}
+              >
                 <Text variant="h3">{job.title}</Text>
-              </Link>
+              </div>
               <Button as={Link} to={`/jobs/${job.id}/apply`} size="sm">
                 Apply
               </Button>
@@ -150,6 +160,13 @@ export const JobList = () => {
           </div>
         ))}
       </div>
+
+      <JobDetailModal
+        jobId={id || ""}
+        isOpen={!!id}
+        onClose={handleCloseModal}
+        isAuthenticated={hasBearerToken}
+      />
     </div>
   );
 };

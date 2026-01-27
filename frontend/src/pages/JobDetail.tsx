@@ -22,6 +22,7 @@ export const JobDetail = () => {
     fetch(`/api/jobs/${id}`)
       .then((res) => res.json())
       .then((response: { data: Job }) => {
+        // added .data property to fetch necessary date
         setJob(response.data);
         setLoading(false);
       })
