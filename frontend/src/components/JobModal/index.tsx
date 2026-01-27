@@ -90,7 +90,12 @@ export const JobModal = ({
   return (
     <Modal ariaLabel={title || "Job Modal"} store={modal}>
       <Modal.Content>
-        <Modal.Body title={title} style={{ padding: "24px" }}>
+        <Modal.Header title={title || "Job Details"}>
+          <Button variant="ghost" size="sm" onClick={modal.hide}>
+            ✕
+          </Button>
+        </Modal.Header>
+        <Modal.Body>
           <div className="modal-scroll">{children}</div>
         </Modal.Body>
       </Modal.Content>
