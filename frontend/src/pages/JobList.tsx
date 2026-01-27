@@ -128,9 +128,14 @@ export const JobList = () => {
           </Button>
         </div>
       )}
-      <Text variant="h1" className="mb-md">
-        Job Listings
-      </Text>
+      <div className="flex justify-between items-end mb-md">
+        <Text variant="h1">Job Listings</Text>
+        {hasBearerToken && (
+          <Button onClick={() => navigate("/jobs/new")} size="sm">
+            + New Job
+          </Button>
+        )}
+      </div>
 
       <SearchBar
         value={searchTerm}
