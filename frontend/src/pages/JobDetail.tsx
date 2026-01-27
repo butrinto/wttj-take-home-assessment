@@ -22,7 +22,7 @@ export const JobDetail = () => {
     fetch(`/api/jobs/${id}`)
       .then((res) => res.json())
       .then((response: { data: Job }) => {
-        setJob(response);
+        setJob(response.data);
         setLoading(false);
       })
       .catch((err) => {
