@@ -3,6 +3,7 @@ import { Accordion, useAccordion } from "welcome-ui/Accordion";
 import { Button } from "welcome-ui/Button";
 import { useNavigate } from "react-router-dom";
 import { ReactNode } from "react";
+import { ApplicationsTable } from "../ApplicationsTable";
 
 interface Job {
   id: number;
@@ -74,15 +75,7 @@ export const JobModal = ({
               {children}
               <div className="mt-lg">
                 <Accordion store={accordionApplications} title="Applications">
-                  {applications.length === 0 ? (
-                    <div>No applications yet</div>
-                  ) : (
-                    <ul>
-                      {applications.map((app: any) => (
-                        <li key={app.id}>{app.candidate_name}</li>
-                      ))}
-                    </ul>
-                  )}
+                  <ApplicationsTable applications={applications} />
                 </Accordion>
 
                 <Accordion store={accordionHistory} title="Change History">
