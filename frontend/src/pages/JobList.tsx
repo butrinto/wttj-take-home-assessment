@@ -160,15 +160,26 @@ export const JobList = () => {
               >
                 <Text variant="h3">{job.title}</Text>
               </div>
-              <Button
-                as={Link}
-                to={`/jobs/${job.id}/apply`}
-                size="sm"
-                className="flex-shrink-0"
-                style={{ width: "60px" }}
-              >
-                Apply
-              </Button>
+              {hasBearerToken ? (
+                <Button
+                  onClick={() => navigate(`/jobs/${job.id}/edit`)}
+                  size="sm"
+                  className="flex-shrink-0"
+                  style={{ width: "60px" }}
+                >
+                  Edit
+                </Button>
+              ) : (
+                <Button
+                  as={Link}
+                  to={`/jobs/${job.id}/apply`}
+                  size="sm"
+                  className="flex-shrink-0"
+                  style={{ width: "60px" }}
+                >
+                  Apply
+                </Button>
+              )}
             </div>
             <Text className="mt-sm">{job.description}</Text>
             <Text variant="sm" className="mt-auto">

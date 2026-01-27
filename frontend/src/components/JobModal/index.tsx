@@ -25,6 +25,7 @@ interface JobModalProps {
   loading?: boolean;
   error?: string | null;
   applications?: any[];
+  footerActions?: ReactNode;
 }
 
 export const JobModal = ({
@@ -34,6 +35,7 @@ export const JobModal = ({
   title,
   isAuthenticated = false,
   applications = [],
+  footerActions,
 }: JobModalProps) => {
   const navigate = useNavigate();
   const modal = useModal({
@@ -55,19 +57,9 @@ export const JobModal = ({
       <Modal ariaLabel={title || "Job Modal"} store={modal}>
         <Modal.Content>
           <Modal.Header title={title || "Job Details"}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <h2 style={{ margin: 0 }}>{title || "Job Details"}</h2>
-              <Button variant="ghost" size="sm" onClick={modal.hide}>
-                ✕
-              </Button>
-            </div>
+            <Button variant="ghost" size="sm" onClick={modal.hide}>
+              ✕
+            </Button>
           </Modal.Header>
 
           <Modal.Body style={{ padding: "24px" }}>
@@ -83,6 +75,10 @@ export const JobModal = ({
                 </Accordion>
               </div>
             </div>
+
+            {footerActions && (
+              <div className="flex justify-end mt-lg">{footerActions}</div>
+            )}
           </Modal.Body>
         </Modal.Content>
       </Modal>
@@ -98,8 +94,12 @@ export const JobModal = ({
             ✕
           </Button>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ padding: "24px" }}>
           <div className="modal-scroll">{children}</div>
+
+          {footerActions && (
+            <div className="flex justify-end mt-lg">{footerActions}</div>
+          )}
         </Modal.Body>
       </Modal.Content>
     </Modal>

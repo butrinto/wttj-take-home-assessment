@@ -81,14 +81,6 @@ export const JobDetailModal = ({
       <Text className="mb-sm">
         <strong>Status:</strong> {job?.status}
       </Text>
-
-      {!isAuthenticated && (
-        <div className="flex justify-end mt-lg">
-          <Button onClick={() => navigate(`/jobs/${jobId}/apply`)}>
-            Apply for this Job
-          </Button>
-        </div>
-      )}
     </div>
   );
 
@@ -102,6 +94,20 @@ export const JobDetailModal = ({
       loading={loading}
       error={error}
       applications={applications}
+      footerActions={
+        isAuthenticated ? (
+          <Button
+            variant="secondary"
+            onClick={() => navigate(`/jobs/${jobId}/edit`)}
+          >
+            Edit Job
+          </Button>
+        ) : (
+          <Button onClick={() => navigate(`/jobs/${jobId}/apply`)}>
+            Apply for this Job
+          </Button>
+        )
+      }
     >
       {jobDetailsContent}
     </JobModal>
