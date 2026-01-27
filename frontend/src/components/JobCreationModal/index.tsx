@@ -5,6 +5,8 @@ import { Select } from "welcome-ui/Select";
 import { Textarea } from "welcome-ui/Textarea";
 import { Button } from "welcome-ui/Button";
 import { useState } from "react";
+import { createJob } from "../../api/create";
+import Cookies from "js-cookie";
 
 interface JobCreationModalProps {
   isOpen: boolean;
@@ -24,14 +26,34 @@ export const JobCreationModal = ({
     status: "draft",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form data:", formData);
-    // API call will go here in next commit
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = Cookies.get("user-token");
+      if (!token) {
+        throw new Error("Not authenticated");
+      }
+
+      await createJob(formData, token);
+
+      // Success - close modal and refresh
+      onClose();
+      window.location.reload(); // Simple refresh to show new job
+    } catch (err: any) {
+      setError(err.message || "Failed to create job");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -107,11 +129,22 @@ export const JobCreationModal = ({
           />
         </Field>
 
+        {error && (
+          <div className="mb-md" style={{ color: "red" }}>
+            {error}
+          </div>
+        )}
+
         <div className="flex gap-md mt-lg">
-          <Button type="submit" variant="primary">
-            Create Job
+          <Button type="submit" variant="primary" disabled={loading}>
+            {loading ? "Creating..." : "Create Job"}
           </Button>
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancel
           </Button>
         </div>
