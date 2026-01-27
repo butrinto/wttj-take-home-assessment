@@ -142,18 +142,24 @@ export const JobList = () => {
       <div>
         {filteredJobs.map((job) => (
           <div key={job.id} className="p-md mb-md bg-neutral-20">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-md">
               <div
                 onClick={() => navigate(`/jobs/${job.id}`)}
                 style={{ cursor: "pointer" }}
               >
                 <Text variant="h3">{job.title}</Text>
               </div>
-              <Button as={Link} to={`/jobs/${job.id}/apply`} size="sm">
+              <Button
+                as={Link}
+                to={`/jobs/${job.id}/apply`}
+                size="sm"
+                className="flex-shrink-0"
+                style={{ width: "60px" }}
+              >
                 Apply
               </Button>
             </div>
-            <Text>{job.description}</Text>
+            <Text className="mt-sm">{job.description}</Text>
             <Text variant="sm">
               Type: {job.contract_type} | Office: {job.office}
             </Text>
