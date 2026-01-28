@@ -63,8 +63,8 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setSubmitting(true);
     setError(null);
 
@@ -90,7 +90,30 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <JobModal isOpen={isOpen} onClose={onClose} title="Edit Job">
+    <JobModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edit Job"
+      footerActions={
+        <div className="flex justify-between w-full">
+          <div className="flex gap-md">
+            <Button
+              onClick={() => handleSubmit()}
+              variant="primary"
+              disabled={submitting}
+            >
+              {submitting ? "Saving..." : "Save Changes"}
+            </Button>
+            <Button variant="secondary" onClick={onClose} disabled={submitting}>
+              Cancel
+            </Button>
+          </div>
+          <Button type="button" variant="primary-danger">
+            Delete Job
+          </Button>
+        </div>
+      }
+    >
       <form onSubmit={handleSubmit}>
         <Field label="Job Title" className="mb-md" required>
           <InputText
@@ -165,20 +188,6 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
             {error}
           </div>
         )}
-
-        <div className="flex gap-md mt-lg">
-          <Button type="submit" variant="primary" disabled={submitting}>
-            {submitting ? "Saving..." : "Save Changes"}
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={submitting}
-          >
-            Cancel
-          </Button>
-        </div>
       </form>
     </JobModal>
   );
