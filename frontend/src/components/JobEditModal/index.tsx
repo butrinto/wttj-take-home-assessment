@@ -7,6 +7,7 @@ import { Button } from "welcome-ui/Button";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { updateJob } from "../../api/update";
+import { deleteJob } from "../../api/delete";
 
 interface Job {
   id: number;
@@ -84,6 +85,35 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
     }
   };
 
+  const handleDelete = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this job? This action cannot be undone.",
+      )
+    ) {
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const token = Cookies.get("user-token");
+      if (!token) {
+        throw new Error("Not authenticated");
+      }
+
+      await deleteJob(jobId, token);
+
+      // Success - close modal and refresh
+      onClose();
+      window.location.reload();
+    } catch (err: any) {
+      setError(err.message || "Failed to delete job");
+      setSubmitting(false);
+    }
+  };
+
   if (!isOpen) return null;
   if (loading) return <div>Loading...</div>;
 
@@ -106,7 +136,12 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
               Cancel
             </Button>
           </div>
-          <Button type="button" variant="primary-danger">
+          <Button
+            type="button"
+            variant="primary-danger"
+            onClick={handleDelete}
+            disabled={submitting}
+          >
             Delete Job
           </Button>
         </div>
