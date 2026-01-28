@@ -49,7 +49,8 @@ export const JobList = () => {
     const bearerToken = Cookies.get("user-token");
     const csrfToken = Cookies.get("technical-test-csrf-token");
 
-    // Include auth token to fetch all jobs (including drafts) when logged in
+    setLoading(true); // Show loading state while switching data
+
     fetch("/api/jobs", {
       headers: {
         ...(bearerToken && { Authorization: `Bearer ${bearerToken}` }),
@@ -65,7 +66,9 @@ export const JobList = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+
+    // Adding hasBearerToken here makes this "reactive"
+  }, [hasBearerToken]);
 
   useEffect(() => {
     const csrfToken = Cookies.get("technical-test-csrf-token");
@@ -127,7 +130,7 @@ export const JobList = () => {
                   } catch (e) {}
                   setUser(null);
                   setHasBearerToken(false);
-                  navigate("/signin");
+                  // useEffect triggers manually
                 }}
               >
                 Logout
@@ -175,6 +178,7 @@ export const JobList = () => {
               </div>
               {hasBearerToken ? (
                 <Button
+                  variant="tertiary"
                   onClick={() => navigate(`/jobs/${job.id}/edit`)}
                   size="sm"
                   className="flex-shrink-0"
