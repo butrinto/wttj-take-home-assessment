@@ -7,6 +7,7 @@ defmodule Ats.Jobs do
   alias Ats.Repo
 
   alias Ats.Jobs.Job
+  alias Ats.Jobs.JobModification
   alias Ats.Professions.Profession
 
   @contract_types %{
@@ -160,11 +161,50 @@ defmodule Ats.Jobs do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec update_job(%Job{}, map()) :: {:ok, %Job{}} | {:error, Ecto.Changeset.t()}
-  def update_job(%Job{} = job, attrs) do
-    job
-    |> Job.changeset(attrs)
-    |> Repo.update()
+@doc """
+  Updates a job and logs modifications.
+  """
+  @spec update_job(%Job{}, map(), integer() | nil) ::
+          {:ok, %Job{}} | {:error, Ecto.Changeset.t()}
+  def update_job(%Job{} = job, attrs, user_id \\ nil) do
+    changeset = Job.changeset(job, attrs)
+
+    if changeset.valid? do
+      Ecto.Multi.new()
+      |> Ecto.Multi.update(:job, changeset)
+      |> Ecto.Multi.run(:log_changes, fn _repo, %{job: updated_job} ->
+        log_job_modifications(job, updated_job, user_id)
+        {:ok, updated_job}
+      end)
+      |> Repo.transaction()
+      |> case do
+        {:ok, %{job: job}} -> {:ok, job}
+        {:error, :job, changeset, _} -> {:error, changeset}
+      end
+    else
+      {:error, changeset}
+    end
+  end
+
+  defp log_job_modifications(old_job, new_job, user_id) do
+    fields = [:title, :description, :office, :contract_type, :status, :work_mode]
+
+    Enum.each(fields, fn field ->
+      old_value = Map.get(old_job, field)
+      new_value = Map.get(new_job, field)
+
+      if old_value != new_value do
+        %JobModification{}
+        |> JobModification.changeset(%{
+          job_id: new_job.id,
+          user_id: user_id,
+          field_name: to_string(field),
+          old_value: to_string(old_value),
+          new_value: to_string(new_value)
+        })
+        |> Repo.insert()
+      end
+    end)
   end
 
   @doc """
@@ -197,4 +237,18 @@ defmodule Ats.Jobs do
   def change_job(%Job{} = job, attrs \\ %{}) do
     Job.changeset(job, attrs)
   end
+
+  @doc """
+  Returns the list of modifications for a job.
+  """
+  @spec list_job_modifications(integer() | binary()) :: [%JobModification{}]
+  def list_job_modifications(job_id) do
+    from(m in JobModification,
+      where: m.job_id == ^job_id,
+      order_by: [desc: m.inserted_at],
+      preload: [:user]
+    )
+    |> Repo.all()
+  end
+
 end

@@ -56,4 +56,23 @@ defp data(%Job{} = job) do
       updated_at: job.updated_at
     }
   end
+
+  @doc """
+  Renders modifications for a job.
+  """
+  @spec modifications(%{modifications: [map()]}) :: %{data: [map()]}
+  def modifications(%{modifications: modifications}) do
+    %{
+      data: Enum.map(modifications, fn mod ->
+        %{
+          id: mod.id,
+          field_name: mod.field_name,
+          old_value: mod.old_value,
+          new_value: mod.new_value,
+          user_email: if(mod.user, do: mod.user.email, else: "Unknown"),
+          inserted_at: mod.inserted_at
+        }
+      end)
+    }
+  end
 end

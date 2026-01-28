@@ -39,6 +39,7 @@ defmodule AtsWeb.Router do
     # Authenticated routes
     get "/me", UserController, :me
     get "/jobs/:id/applications", JobController, :applications
+    get "/jobs/:id/modifications", JobController, :modifications
     post "/jobs", JobController, :create
     put "/jobs/:id", JobController, :update
     delete "/jobs/:id", JobController, :delete

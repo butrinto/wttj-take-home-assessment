@@ -57,6 +57,16 @@ defmodule AtsWeb.Api.JobController do
   end
 
   @doc """
+  Get modifications for a job by ID.
+  """
+  @spec modifications(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def modifications(conn, %{"id" => id}) do
+    modifications = Jobs.list_job_modifications(id)
+
+    render(conn, :modifications, modifications: modifications)
+  end
+
+  @doc """
   Update a job by ID.
 
   Expects job parameters in the request body. Returns the updated job.
@@ -64,8 +74,9 @@ defmodule AtsWeb.Api.JobController do
   @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => id, "job" => job_params}) do
     job = Jobs.get_job!(id)
+    user_id = if conn.assigns[:current_user], do: conn.assigns[:current_user].id, else: nil
 
-    with {:ok, %Job{} = job} <- Jobs.update_job(job, job_params) do
+    with {:ok, %Job{} = job} <- Jobs.update_job(job, job_params, user_id) do
       render(conn, :show, job: job)
     end
   end

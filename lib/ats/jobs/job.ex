@@ -22,6 +22,7 @@ defmodule Ats.Jobs.Job do
 
     belongs_to :profession, Ats.Professions.Profession
     has_many :applicants, Ats.Applicants.Applicant
+    has_many :modifications, Ats.Jobs.JobModification
 
     timestamps()
   end
