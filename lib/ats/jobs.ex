@@ -149,18 +149,6 @@ defmodule Ats.Jobs do
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a job.
-
-  ## Examples
-
-      iex> update_job(job, %{field: new_value})
-      {:ok, %Job{}}
-
-      iex> update_job(job, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
 @doc """
   Updates a job and logs modifications.
   """
