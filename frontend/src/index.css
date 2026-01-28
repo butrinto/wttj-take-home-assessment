@@ -16,6 +16,7 @@
 @import "welcome-ui/Select.css";
 @import "welcome-ui/Textarea.css";
 @import "welcome-ui/Table.css";
+@import "welcome-ui/Popover.css";
 
 .modal-scroll {
   max-height: 60vh;
