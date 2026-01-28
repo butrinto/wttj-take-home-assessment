@@ -18,6 +18,13 @@ export const apply = async (
   });
 
   if (!res.ok) {
+    // Parse the error response from backend
+    const errorData = await res.json().catch(() => ({}));
+
+    if (errorData.errors?.application?.[0]) {
+      throw new Error(errorData.errors.application[0]);
+    }
+
     throw new Error("Apply failed");
   }
 

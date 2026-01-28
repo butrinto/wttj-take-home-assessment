@@ -15,7 +15,12 @@ export const useApply = () => {
         await apply(jobId, params);
         navigate("/", { replace: true });
       } catch (err: any) {
-        setError("Unknown error");
+        // If it's a duplicate application error
+        if (err.message.includes("already applied")) {
+          setError("It looks like you have already applied for this role");
+        } else {
+          setError(err.message || "Unknown error");
+        }
         throw err;
       } finally {
         setLoading(false);
