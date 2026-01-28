@@ -2,7 +2,6 @@ defmodule AtsWeb.Api.JobJSON do
   @moduledoc "JSON rendering for Job resources."
 
   alias Ats.Jobs.Job
-  alias Ats.Jobs
 
   @doc """
   Renders a list of jobs.

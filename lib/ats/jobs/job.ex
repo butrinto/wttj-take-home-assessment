@@ -21,6 +21,7 @@ defmodule Ats.Jobs.Job do
     field :work_mode, Ecto.Enum, values: [:onsite, :remote, :hybrid], default: :onsite
 
     belongs_to :profession, Ats.Professions.Profession
+    belongs_to :user, Ats.Accounts.User
     has_many :applicants, Ats.Applicants.Applicant
     has_many :modifications, Ats.Jobs.JobModification
 
@@ -37,7 +38,8 @@ defmodule Ats.Jobs.Job do
       :office,
       :contract_type,
       :status,
-      :work_mode
+      :work_mode,
+      :user_id
     ])
     |> validate_required([:title, :office, :contract_type])
   end

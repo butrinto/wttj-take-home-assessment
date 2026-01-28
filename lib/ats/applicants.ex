@@ -4,10 +4,12 @@ defmodule Ats.Applicants do
   """
 
   import Ecto.Query, warn: false
-  alias Ats.Repo
 
+  alias Ats.Repo
   alias Ats.Applicants.Applicant
   alias Ats.Applicants.Apply
+  alias Ats.Jobs
+  require Logger
 
   @doc """
   Returns the list of applicants.
@@ -125,11 +127,12 @@ defmodule Ats.Applicants do
   @spec create_apply(map()) ::
           {:ok, map()}
           | {:error, Ecto.Changeset.t()}
+
   def create_apply(attrs \\ %{}) do
     changeset = Apply.changeset(%Apply{}, attrs)
-
     if changeset.valid? do
       candidate = Apply.to_candidate(changeset)
+      job_id = attrs["job_id"]
 
       Ecto.Multi.new()
       |> Ecto.Multi.insert(:candidate, candidate)
@@ -139,11 +142,14 @@ defmodule Ats.Applicants do
         |> Map.update!("job_id", &String.to_integer(&1))
         |> Applicant.new_changeset()
       end)
+      |> Ecto.Multi.run(:send_notification, fn _repo, %{candidate: candidate, applicant: applicant} ->
+        send_application_notification(job_id, candidate)
+        {:ok, :notification_sent}
+      end)
       |> Ats.Repo.transaction()
       |> case do
         {:ok, %{candidate: candidate, applicant: applicant}} ->
           {:ok, %{candidate: candidate, applicant: applicant}}
-
         {:error, _} ->
           {:error, changeset}
       end
@@ -151,6 +157,26 @@ defmodule Ats.Applicants do
       # Annotate the action so the UI shows errors
       changeset = %{changeset | action: :create}
       {:error, changeset}
+    end
+  end
+
+  defp send_application_notification(job_id, candidate) do
+    job = Jobs.get_job!(job_id) |> Repo.preload(:user)
+
+    if job.user do
+      # Mock email notification log
+      Logger.info("""
+      --> EMAIL NOTIFICATION
+      To: #{job.user.email}
+      Subject: New Application for #{job.title}
+
+      Job: #{job.title}
+      Applicant: #{candidate.full_name}
+      Email: #{candidate.email}
+      Phone: #{candidate.phone}
+      """)
+    else
+      Logger.warning("Job #{job_id} has no associated user - cannot send notification")
     end
   end
 end

@@ -29,7 +29,10 @@ defmodule AtsWeb.Api.JobController do
   """
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"job" => job_params}) do
-    with {:ok, %Job{} = job} <- Jobs.create_job(job_params) do
+    user_id = if conn.assigns[:current_user], do: conn.assigns[:current_user].id, else: nil
+    job_params_with_user = Map.put(job_params, "user_id", user_id)
+
+    with {:ok, %Job{} = job} <- Jobs.create_job(job_params_with_user) do
       conn
       |> put_status(:created)
       |> render(:show, job: job)
