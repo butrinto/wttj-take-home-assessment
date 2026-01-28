@@ -2,9 +2,9 @@ import { Modal, useModal } from "welcome-ui/Modal";
 import { Accordion, useAccordion } from "welcome-ui/Accordion";
 import { Button } from "welcome-ui/Button";
 import { useNavigate } from "react-router-dom";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { ApplicationsTable } from "../ApplicationsTable";
-
+import { ModificationsTable } from "../ModificationsTable";
 interface Job {
   id: number;
   title: string;
@@ -50,6 +50,7 @@ export const JobModal = ({
 
   const accordionApplications = useAccordion();
   const accordionHistory = useAccordion();
+  const [selectedModification, setSelectedModification] = useState<any>(null);
 
   if (!isOpen) return null;
 
@@ -73,18 +74,13 @@ export const JobModal = ({
                 </Accordion>
 
                 <Accordion store={accordionHistory} title="Change History">
-                  {modifications.length === 0 ? (
-                    <div>No modifications yet</div>
-                  ) : (
-                    <ul>
-                      {modifications.map((mod: any) => (
-                        <li key={mod.id}>
-                          {mod.user_email} changed {mod.field_name} at{" "}
-                          {new Date(mod.inserted_at).toLocaleString()}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <ModificationsTable
+                    modifications={modifications}
+                    onViewEdits={(mod) => {
+                      setSelectedModification(mod);
+                      console.log("View edits for:", mod);
+                    }}
+                  />
                 </Accordion>
               </div>
             </div>
