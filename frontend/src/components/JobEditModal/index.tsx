@@ -25,7 +25,6 @@ interface JobEditModalProps {
 }
 
 export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
-  const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: "",
@@ -45,7 +44,6 @@ export const JobEditModal = ({ jobId, isOpen, onClose }: JobEditModalProps) => {
     fetch(`/api/jobs/${jobId}`)
       .then((res) => res.json())
       .then((response: { data: Job }) => {
-        setJob(response.data);
         setFormData({
           title: response.data.title,
           description: response.data.description,
