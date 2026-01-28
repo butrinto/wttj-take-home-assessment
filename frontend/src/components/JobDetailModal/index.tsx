@@ -33,6 +33,7 @@ export const JobDetailModal = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [applications, setApplications] = useState<any[]>([]);
+  const [modifications, setModifications] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isOpen || !jobId) return;
@@ -59,6 +60,18 @@ export const JobDetailModal = ({
         .then((res) => res.json())
         .then((response) => setApplications(response.data || []))
         .catch(() => setApplications([]));
+
+      // Fetch modifications
+      fetch(`/api/jobs/${jobId}/modifications`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("user-token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          setModifications(response.data || []);
+        })
+        .catch(() => setModifications([]));
     }
   }, [jobId, isOpen, isAuthenticated]);
 
@@ -94,6 +107,7 @@ export const JobDetailModal = ({
       loading={loading}
       error={error}
       applications={applications}
+      modifications={modifications}
       footerActions={
         isAuthenticated ? (
           <Button

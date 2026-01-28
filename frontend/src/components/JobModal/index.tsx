@@ -25,6 +25,7 @@ interface JobModalProps {
   loading?: boolean;
   error?: string | null;
   applications?: any[];
+  modifications?: any[];
   footerActions?: ReactNode;
 }
 
@@ -35,6 +36,7 @@ export const JobModal = ({
   title,
   isAuthenticated = false,
   applications = [],
+  modifications = [],
   footerActions,
 }: JobModalProps) => {
   const navigate = useNavigate();
@@ -71,7 +73,18 @@ export const JobModal = ({
                 </Accordion>
 
                 <Accordion store={accordionHistory} title="Change History">
-                  <div>Change history coming soon...</div>
+                  {modifications.length === 0 ? (
+                    <div>No modifications yet</div>
+                  ) : (
+                    <ul>
+                      {modifications.map((mod: any) => (
+                        <li key={mod.id}>
+                          {mod.user_email} changed {mod.field_name} at{" "}
+                          {new Date(mod.inserted_at).toLocaleString()}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </Accordion>
               </div>
             </div>
