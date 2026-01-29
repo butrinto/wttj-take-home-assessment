@@ -36,6 +36,8 @@ This project is my submission for the Welcome to the Jungle Full Stack take home
   - [Tests](#tests)
 - [Conclusion](#conclusion)
 
+---
+
 ## Scope & Approach
 
 Given the timeframe, I focused on delivering production quality features across the full stack:
@@ -62,7 +64,9 @@ The most challenging aspect was definitely foreign key constraints. Understandin
 
 ## Planning & Design Process
 
-Before diving in, I sketched out wireframes to map user journeys and plan the architecture. This helped me visualise the flow between different states and ensure a consistent user experience across authenticated and non-authenticated views. Here, I incorporated the welcome-ui to understand what components were important to utilise.
+Before diving in, I sketched out wireframes to map user journeys and plan the architecture. This helped me visualise the flow between different states and ensure a consistent user experience across authenticated and non-authenticated views.
+
+Here, I incorporated the welcome-ui to understand what components were important to utilise.
 
 ### User Journey Wireframes
 
@@ -84,19 +88,19 @@ Authenticated users have full CRUD capabilities, with additional views for manag
 
 ### Features Implemented
 
-| Feature                       | Description                                            | Implementation                                                                           |
-| ----------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| **Job Search**                | Search jobs by title, office, work_mode, contract_type | Query parameter filtering. Case-insensitive. Supports multiple combinations.             |
-| **Modification Log**          | Track all job edits with user attribution              | Created `job_modifications` table to log field changes. Displays who, when and what      |
-| **Application Notifications** | Email notification on new applications                 | Mock email system logs notifications to console. Tracks job creator via `user_id` field. |
+| Feature                       | Description                                            | Implementation                                                                         |
+| ----------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| **Job Search**                | Search jobs by title, office, work_mode, contract_type | Query parameter filtering. Case-insensitive. Supports multiple combinations            |
+| **Modification Log**          | Track all job edits with user attribution              | Created `job_modifications` table to log field changes. Displays who, when and what    |
+| **Application Notifications** | Email notification on new applications                 | Mock email system logs notifications to console Tracks job creator via `user_id` field |
 
 ### Bug Fixes
 
-| Bug                        | Problem                                                            | Solution                                                                                                                           |
-| -------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Job Visibility**         | All jobs visible to public users regardless of status              | Implemented `list_published_jobs/0` function filtering by `:published` status. Authenticated users see all jobs via `list_jobs/0`. |
-| **Delete with Applicants** | Cannot delete jobs with applications due to foreign key constraint | Changed `applicants.job_id` constraint from `on_delete: :nothing` to `on_delete: :delete_all` via migration.                       |
-| **Duplicate Applications** | Users can apply multiple times with same email/phone               | Added application-level check in `apply_controller.ex` to query existing applications by email OR phone before creating new ones.  |
+| Bug                        | Problem                                                            | Solution                                                                                                                          |
+| -------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Job Visibility**         | All jobs visible to public users regardless of status              | Implemented `list_published_jobs/0` function filtering by `:published` status. Authenticated users see all jobs via `list_jobs/0` |
+| **Delete with Applicants** | Cannot delete jobs with applications due to foreign key constraint | Changed `applicants.job_id` constraint from `on_delete: :nothing` to `on_delete: :delete_all` via migration.                      |
+| **Duplicate Applications** | Users can apply multiple times with same email/phone               | Added application-level check in `apply_controller.ex` to query existing applications by email OR phone before creating new ones  |
 
 ### Additional Backend Improvements
 
@@ -227,18 +231,21 @@ _Job deletion prompt, default confirm box_
 </td>
 </tr>
 <tr>
-<td width="50%">
+<td width="33%">
 
 ![Email Fail](docs/screenshots/email_test_fail.png)
 _Email test unsuccessful on console, job has no owner (prepopulated jobs)_
 
 </td>
-<td width="50%">
+<td width="33%">
+</td>
+<td width="33%">
 
 ![Email Success](docs/screenshots/email_test.png)
 _Email test successful on console_
 
 </td>
+
 </tr>
 </table>
 
