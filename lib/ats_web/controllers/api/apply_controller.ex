@@ -2,7 +2,6 @@ defmodule AtsWeb.Api.ApplyController do
   use AtsWeb, :controller
 
   alias Ats.Applicants
-  alias Ats.Jobs
   alias Ats.Repo
   alias Ats.Candidates.Candidate
   alias Ats.Applicants.Applicant
@@ -17,7 +16,6 @@ defmodule AtsWeb.Api.ApplyController do
   """
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"job_id" => job_id, "apply" => apply_params}) do
-    job = Jobs.get_job!(job_id)
 
     # Check if candidate with this email or phone already applied to this job
     email = apply_params["email"]
@@ -47,7 +45,7 @@ defmodule AtsWeb.Api.ApplyController do
           |> json(%{
             data: %{
               message: "Application submitted successfully",
-              job_id: job.id
+              job_id: String.to_integer(job_id)
             }
           })
 
