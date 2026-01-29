@@ -1,12 +1,44 @@
 # Application Tracking System – Take-Home Assignment
 
-This project is my submission for the Welcome to the Jungle full-stack take-home test.
+<br>
+This project is my submission for the Welcome to the Jungle Full Stack take home test.
 
 ---
 
+### Table of Contents
+
+- [Application Tracking System – Take-Home Assignment](#application-tracking-system--take-home-assignment)
+- [Scope & Approach](#scope--approach)
+- [Reflection](#reflection)
+- [Planning & Design Process](#planning--design-process)
+  - [User Journey Wireframes](#user-journey-wireframes)
+    - [Non-Authenticated User Journey](#non-authenticated-user-journey)
+    - [Authenticated User Journey](#authenticated-user-journey)
+- [Backend Implementation](#backend-implementation)
+  - [Features Implemented](#features-implemented)
+  - [Bug Fixes](#bug-fixes)
+  - [Additional Backend Improvements](#additional-backend-improvements)
+- [Frontend Implementation](#frontend-implementation)
+  - [Core Features](#core-features)
+  - [Authentication Aware UI](#authentication-aware-ui)
+  - [UI/UX](#uiux)
+  - [Testing Coverage](#testing-coverage)
+  - [Frontend Bug Fix](#frontend-bug-fix)
+- [Application Screenshots](#application-screenshots)
+- [Design & Architecture Decisions](#design--architecture-decisions)
+  - [Architecture](#architecture)
+  - [Component Reusability](#component-reusability)
+  - [State Management](#state-management)
+- [What I'd Add With More Time](#what-id-add-with-more-time)
+- [Running the Project](#running-the-project)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Tests](#tests)
+- [Conclusion](#conclusion)
+
 ## Scope & Approach
 
-Given the 48-hour timeframe, I focused on delivering production-quality features across the full stack:
+Given the timeframe, I focused on delivering production quality features across the full stack:
 
 - **Backend**: 3 features + 3 bug fixes with comprehensive testing
 - **Frontend**: Complete job management UI with authentication-aware features
@@ -18,13 +50,33 @@ This allowed me to demonstrate both breadth (multiple features) and depth (imple
 
 ## Reflection
 
-This was my first time working with Elixir/Phoenix, and I genuinely enjoyed the learning curve. The pattern matching and data transformations felt really intuitive once I got the hang of them. Using the Ecto.Multi pattern for handling transactions made complex operations like the application + notification flow much easier.
+This was my first time working with Elixir(/Phoenix), and I genuinely enjoyed the learning curve. The pattern matching and data transformations felt really intuitive once I got the hang of them.
 
-On the frontend, Welcome UI turned out to be simple to use. I did run into a few walls where some nice (nicer, dare I say) components I wanted to use were part of v10, and trying to update from v9 broke the original codebase. Given the time constraints, I didn't want to overcomplicate things, so I stuck with v9 and made sure to carefully check the documentation to avoid using any v10 features or changes.
+On the frontend, Welcome UI turned out to be simple to use. I did run into a few walls where some nice (dare I say **_nicer_**) components I wanted to use were part of v10, and trying to update from v9 broke the original codebase. Given the time constraints, I didn't want to overcomplicate things, so I stuck with v9 and made sure to carefully check the documentation to avoid using any v10 features or changes.
 
 The backend was obviously completely new territory for me. I spent my evenings going through the Phoenix and Ecto documentation provided in the task, and initially just focused on the minimum requirement of 1 backend feature and 1 bug fix. But with some spare time left, I decided to challenge myself and tackle all the bugs and features. I think it turned out pretty well!
 
-The most challenging aspect was definitely foreign key constraints. Understanding Ecto's migration system and the different `on_delete` strategies required a lot of trial-and-error, but getting that success moment when it finally clicked was really satisfying.
+The most challenging aspect was definitely foreign key constraints. Understanding Ecto's migration system and the different `on_delete` strategies required a lot of trial-and-error, but getting that success moment when it finally clicked was really satisfying. Using the Ecto.Multi pattern for handling transactions made complex operations like the application + notification flow much easier.
+
+---
+
+## Planning & Design Process
+
+Before diving in, I sketched out wireframes to map user journeys and plan the architecture. This helped me visualise the flow between different states and ensure a consistent user experience across authenticated and non-authenticated views. Here, I incorporated the welcome-ui to understand what components were important to utilise.
+
+### User Journey Wireframes
+
+**Non-Authenticated User Journey**
+
+![Guest User Journey](docs/wireframes/un_authenticated_journey.jpeg)
+
+Users can browse published jobs, view details, and submit applications through a streamlined modal flow.
+
+**Authenticated User Journey**
+
+![Authenticated User Journey](docs/wireframes/authenticated_journey.jpeg)
+
+Authenticated users have full CRUD capabilities, with additional views for managing applications and tracking job modifications.
 
 ---
 
@@ -32,11 +84,11 @@ The most challenging aspect was definitely foreign key constraints. Understandin
 
 ### Features Implemented
 
-| Feature                       | Description                                            | Implementation                                                                                                             |
-| ----------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| **Job Search**                | Search jobs by title, office, work_mode, contract_type | Query parameter filtering with case-insensitive matching. Supports multiple filter combinations.                           |
-| **Modification Log**          | Track all job edits with user attribution              | Created `job_modifications` table to log field changes. Displays who edited, what changed, and when in frontend accordion. |
-| **Application Notifications** | Email notification on new applications                 | Mock email system logs notifications to console. Tracks job creator via `user_id` field.                                   |
+| Feature                       | Description                                            | Implementation                                                                           |
+| ----------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **Job Search**                | Search jobs by title, office, work_mode, contract_type | Query parameter filtering. Case-insensitive. Supports multiple combinations.             |
+| **Modification Log**          | Track all job edits with user attribution              | Created `job_modifications` table to log field changes. Displays who, when and what      |
+| **Application Notifications** | Email notification on new applications                 | Mock email system logs notifications to console. Tracks job creator via `user_id` field. |
 
 ### Bug Fixes
 
@@ -109,9 +161,92 @@ The most challenging aspect was definitely foreign key constraints. Understandin
 
 ---
 
+## Application Screenshots
+
+The final implementation brings the wireframes to life with a clean, modal based interface:
+
+<table>
+<tr>
+<td width="33%">
+
+![Job List](docs/screenshots/default.png)
+_Unauthenticated Job listings with search_
+
+</td>
+<td width="33%">
+
+![Job Detail](docs/screenshots/authenticated.png)
+_Authenticated Job listings with search_
+
+</td>
+<td width="33%">
+
+![Change History](docs/screenshots/edit.png)
+_Job editing with delete option_
+
+</td>
+</tr>
+<tr>
+<td width="33%">
+
+![Edit Modal](docs/screenshots/detailmodal_applications.png)
+_View all applicants to specific job_
+
+</td>
+<td width="33%">
+
+![Popover](docs/screenshots/detailmodal_changehistory.png)
+_View all specific job edits_
+
+</td>
+<td width="33%">
+
+![Delete Confirmation](docs/screenshots/detailmodal_popover.png)
+_Modification details popover_
+
+</td>
+</tr>
+<tr>
+<td width="33%">
+
+![Login](docs/screenshots/login.png)
+_Authentication flow, unchanged_
+
+</td>
+<td width="33%">
+
+![Register](docs/screenshots/register.png)
+_User registration, unchanged_
+
+</td>
+<td width="33%">
+
+![Authenticated View](docs/screenshots/delete.png)
+_Job deletion prompt, default confirm box_
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+![Email Fail](docs/screenshots/email_test_fail.png)
+_Email test unsuccessful on console, job has no owner (prepopulated jobs)_
+
+</td>
+<td width="50%">
+
+![Email Success](docs/screenshots/email_test.png)
+_Email test successful on console_
+
+</td>
+</tr>
+</table>
+
+---
+
 ## Design & Architecture Decisions
 
-### Modal-Based Architecture
+### Architecture
 
 Rather than using separate pages, I implemented a **modal system** for all job interactions:
 
@@ -138,6 +273,7 @@ Rather than using separate pages, I implemented a **modal system** for all job i
 - **Candidate accounts** for better duplicate prevention
 - **File upload/s** for resumes/cover letters
 - **Advanced search** with filters UI
+- **Tags** for quick view of drafted/published
 - **Pagination** for large job lists
 - **Welcome-ui v10** for further component integration
 - **E2E tests** with Playwright
@@ -153,6 +289,7 @@ Rather than using separate pages, I implemented a **modal system** for all job i
 cd technical-test-fullstack-main
 mix deps.get
 mix ecto.setup
+
 mix phx.server
 ```
 
@@ -161,6 +298,7 @@ mix phx.server
 ```bash
 cd frontend
 yarn install
+
 yarn dev
 ```
 
@@ -177,16 +315,10 @@ yarn test
 
 ---
 
-## Time Allocation
+## Conclusion
 
-| Phase                      | Time | Focus                                                 |
-| -------------------------- | ---- | ----------------------------------------------------- |
-| **Setup & Planning**       | 3h   | Requirements analysis, wireframing, environment setup |
-| **Backend Features**       | 9h   | Search, modification log, notifications, bug fixes    |
-| **Frontend Features**      | 10h  | Modals, forms, tables, authentication UI              |
-| **Testing**                | 3h   | Component tests, integration testing                  |
-| **Polish & Documentation** | 2h   | Code cleanup, README, commit history                  |
+I honestly had a lot of fun working on this task, especially bringing my paper wireframe designs to life in the frontend.
 
-**Total: ~27 hours over 3 days**
+Thank you so much for this opportunity; it was a great way to dive into a new stack while building something practical
 
-I honestly had a lot of fun working on this task, especially bringing my paper wireframe designs to life in the frontend. Thank you so much for this opportunity; it was a great way to learn a new stack while building something practical :)
+:)
