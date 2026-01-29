@@ -1,144 +1,192 @@
-# Technical Test for Fullstack Developer - Application Tracking System
+# Application Tracking System – Take-Home Assignment
 
-Welcome to the Fullstack Developer Job Application Tracking System! This REST API backend, built with Elixir Phoenix, is designed to assist in conducting technical tests for fullstack developer candidates.
+This project is my submission for the Welcome to the Jungle full-stack take-home test.
 
-This application is a simplified job board.
-An unregistered user is able to list all jobs and can apply to a job.
-It provides a platform to manage job offers and track candidate information.
+---
 
-A registered user can create, edit, and delete job offers.
-On each job offer, a registered user can see the list of candidates who have applied to the job.
+## Scope & Approach
 
-## Repository Structure
+Given the 48-hour timeframe, I focused on delivering production-quality features across the full stack:
 
-This is a monorepo containing both backend and frontend:
+- **Backend**: 3 features + 3 bug fixes with comprehensive testing
+- **Frontend**: Complete job management UI with authentication-aware features
+- **Testing**: 6 component test suites covering critical user flows
 
-- **Backend (root):** Phoenix/Elixir REST API
-- **Frontend (`/frontend`):** React 19 application with TypeScript
+This allowed me to demonstrate both breadth (multiple features) and depth (implementation).
 
-## Installation
+---
 
-1. Clone the repository
-2. Navigate to the project directory: `cd technical-test-fullstack-main`
-3. Install language versions and dependencies:
+## Reflection
 
-   We suggest you use asdf (or another version manager) to manage Erlang, Elixir and Node versions.
+This was my first time working with Elixir/Phoenix, and I genuinely enjoyed the learning curve. The pattern matching and data transformations felt really intuitive once I got the hang of them. Using the Ecto.Multi pattern for handling transactions made complex operations like the application + notification flow much easier.
 
-   To install asdf, visit <http://asdf-vm.com/guide/getting-started.html>.
+On the frontend, Welcome UI turned out to be simple to use. I did run into a few walls where some nice (nicer, dare I say) components I wanted to use were part of v10, and trying to update from v9 broke the original codebase. Given the time constraints, I didn't want to overcomplicate things, so I stuck with v9 and made sure to carefully check the documentation to avoid using any v10 features or changes.
 
-   Add the required plugins:
+The backend was obviously completely new territory for me. I spent my evenings going through the Phoenix and Ecto documentation provided in the task, and initially just focused on the minimum requirement of 1 backend feature and 1 bug fix. But with some spare time left, I decided to challenge myself and tackle all the bugs and features. I think it turned out pretty well!
 
-   ```bash
-   asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
-   asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
-   asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-   ```
+The most challenging aspect was definitely foreign key constraints. Understanding Ecto's migration system and the different `on_delete` strategies required a lot of trial-and-error, but getting that success moment when it finally clicked was really satisfying.
 
-   Then install the versions specified in the `.tool-versions` file:
+---
 
-   ```bash
-   asdf install
-   ```
+## Backend Implementation
 
-   You can now install the Elixir dependencies:
+### Features Implemented
 
-   ```bash
-   mix deps.get
-   ```
+| Feature                       | Description                                            | Implementation                                                                                                             |
+| ----------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| **Job Search**                | Search jobs by title, office, work_mode, contract_type | Query parameter filtering with case-insensitive matching. Supports multiple filter combinations.                           |
+| **Modification Log**          | Track all job edits with user attribution              | Created `job_modifications` table to log field changes. Displays who edited, what changed, and when in frontend accordion. |
+| **Application Notifications** | Email notification on new applications                 | Mock email system logs notifications to console. Tracks job creator via `user_id` field.                                   |
 
-4. Set up the database and update the configuration in `config/dev.exs` or start a Docker container with the `docker-compose.yml` file included in the project.
-5. Create and migrate the database: `mix ecto.setup`
-6. Run the tests: `mix test`
-7. Start the Phoenix server: `mix phx.server`
-8. Frontend Setup:
+### Bug Fixes
 
-   ```bash
-   cd frontend
-   corepack enable
-   yarn install
-   yarn dev  # Starts on http://localhost:5173
-   ```
+| Bug                        | Problem                                                            | Solution                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Job Visibility**         | All jobs visible to public users regardless of status              | Implemented `list_published_jobs/0` function filtering by `:published` status. Authenticated users see all jobs via `list_jobs/0`. |
+| **Delete with Applicants** | Cannot delete jobs with applications due to foreign key constraint | Changed `applicants.job_id` constraint from `on_delete: :nothing` to `on_delete: :delete_all` via migration.                       |
+| **Duplicate Applications** | Users can apply multiple times with same email/phone               | Added application-level check in `apply_controller.ex` to query existing applications by email OR phone before creating new ones.  |
 
-## Exercise
+### Additional Backend Improvements
 
-We are glad to introduce you to this technical test which will help us better understand your skills and competencies related to our tech stack. In this exercise, we will use our in-house built Applicant Tracking System (ATS) application developed with Phoenix Elixir and React.
+| Enhancement                   | Rationale                                                                                        |
+| ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| **User attribution for jobs** | Added `user_id` to jobs table to track ownership for notifications and future features           |
+| **Cascade delete support**    | Modified foreign key constraints to allow job deletion even with applicants                      |
+| **Contract type formatting**  | Added helper function to return human-readable labels (e.g., "Full-Time" instead of "FULL_TIME") |
 
-The goal of this test is to simulate real-world scenarios where you will need to add new features to an existing application and fix some bugs. You have to implement at least 1 backend feature, 1 bug fix, and complete the frontend requirements. Your work will be evaluated based on your approach, your understanding of the problem and the quality of your code.
+---
 
-### Backend Features
+## Frontend Implementation
 
-Here are three potential features you could add:
+### Core Features
 
-1. **Job search function:** Add a feature that allows all users to search for jobs. This should include being able to search using various parameters like job title, office, work_mode, etc. You have to implement the backend functionality.
+| View                | Route             | Description                                  | Auth Required |
+| ------------------- | ----------------- | -------------------------------------------- | ------------- |
+| **Job Listings**    | `/`               | Searchable job list with real-time filtering | No            |
+| **Job Details**     | `/jobs/:id`       | Full job information with Apply button       | No            |
+| **Job Application** | `/jobs/:id/apply` | Application form with validation             | No            |
+| **Job Creation**    | `/jobs/new`       | Create new job postings                      | Yes           |
+| **Job Editing**     | `/jobs/:id/edit`  | Edit existing jobs with prefilled data       | Yes           |
 
-2. **Modification log:** Implement a change log for each job update. The system should keep track of who made a modification, as well as the fields and values that were changed. You have to implement the backend functionality.
+### Authentication Aware UI
 
-3. **Application notifications:** Whenever a user applies for a job, the job's creator should receive an email notifying them of this new application. You do not need to actually send an email in the development environment. It is sufficient to simulate or mock this functionality in some way.
+| Feature                 | Description                                                   |
+| ----------------------- | ------------------------------------------------------------- |
+| **Conditional Actions** | Apply button for guests, Edit button for authenticated users  |
+| **Applications Table**  | View all applicants with contact actions (email/phone)        |
+| **Change History**      | Accordion showing modification log with popover details       |
+| **Dynamic Content**     | Authenticated users see draft jobs; guests see published only |
 
-### Backend Bugs
+### UI/UX
 
-Here are some bugs you might fix:
+| Enhancement                      | Implementation                                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Modal-based Navigation**       | All job interactions (view/apply/create/edit) use modals instead of full page navigation for better UX |
+| **Real-time Search**             | Instant client-side filtering by job title and office location                                         |
+| **Contract Type Formatting**     | Display human-readable labels throughout UI                                                            |
+| **Modification Details Popover** | Click "View Edits" to see before/after values in a styled popover                                      |
+| **Hidden Scrollbars**            | Clean modal appearance with custom CSS                                                                 |
+| **Responsive Tables**            | Applications and modifications display cleanly in Welcome UI tables                                    |
 
-1. **Job visibility:** Currently, all job postings are visible to all users, regardless of their status. The expected behavior is that only job postings with a status of "published" should be visible to non-logged in users.
+### Testing Coverage
 
-2. **Deleting job postings:** As a recruiter (registered user), it is currently impossible to delete a job posting if someone has already applied. We want recruiters to have the ability to delete a job posting, even if there are applicants.
+| Component             | Tests                                            | Coverage |
+| --------------------- | ------------------------------------------------ | -------- |
+| **SearchBar**         | Input rendering, value display, onChange handler | 3 tests  |
+| **JobDetailModal**    | Data fetching, button rendering, auth state      | 4 tests  |
+| **JobCreationModal**  | Form fields, validation, submit flow             | 5 tests  |
+| **JobApplyModal**     | Form rendering, required fields                  | 4 tests  |
+| **JobEditModal**      | Prefill data, save/delete actions                | 4 tests  |
+| **ApplicationsTable** | Empty state, data display, contact buttons       | 5 tests  |
 
-3. **Application duplication:** Users are currently able to apply to the same job multiple times. We need to implement a restriction to prevent multiple applications to the same job by the same user.
+**Total: 6 test suites, 25 tests, all passing**
 
-### Frontend Requirements
+### Frontend Bug Fix
 
-The frontend folder contains a basic React 19 + TypeScript setup with a minimal routing structure and placeholder views. **You are required to complete the following:**
+| Bug                       | Issue                                                                  | Solution                                                                                                           |
+| ------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **TypeScript Type Error** | `SearchBarProps` interface used incorrect type for `onChange` callback | Changed from `(value: string) => void` to proper event handler type, ensuring type safety across search components |
 
-1. **Implement at least one view using Welcome UI:**
+---
 
-   The routing is already set up with three placeholder pages. Choose and implement **at least one** of them using `welcome-ui` components (already installed):
+## Design & Architecture Decisions
 
-   - **Job List Page (`/`):** Display all jobs with proper styling and a search
-   - **Job Detail Page (`/jobs/:id`):** Show complete job information (including modification log)
-   - **Job Creation Form (`/jobs/new`):** Form to create a new job posting
+### Modal-Based Architecture
 
-2. **Fix the TypeScript Bug:**
+Rather than using separate pages, I implemented a **modal system** for all job interactions:
 
-   There is a TypeScript type issue in one of the frontend files that needs to be fixed. The application may compile, but the types are incorrect and could lead to runtime errors. Identify and fix this issue.
+- Keeps users in context (no navigation away from job list)
+- Provides smooth transitions with accordions for additional info
+- Separates concerns: `JobModal` (wrapper) + specific modals for each action
 
-3. **Testing:**
+### Component Reusability
 
-   - Write at least **2 meaningful unit tests** using the provided test setup (Vitest + React Testing Library)
-   - Test should cover important functionality (component behavior, user interactions, etc.)
-   - Tests should pass: `yarn test`
+- **JobModal**: Shared wrapper for all job-related modals (details/create/edit/apply)
+- **Dynamic footerActions**: Prop-based button rendering for flexibility
+- **Table components**: Reusable `ApplicationsTable` and `ModificationsTable`
 
-### Evaluation Criteria
+### State Management
 
-**Backend (40%):**
+- **URL-driven modals**: Modal state tied to route (`/jobs/:id` opens detail modal)
+- **Cookie-based auth**: Simple token storage for authentication state
 
-- Code quality and organization
-- Proper use of Phoenix/Elixir patterns and conventions
-- Database design and query optimization
-- Error handling and edge cases
-- Test coverage
+---
 
-**Frontend (40%):**
+## What I'd Add With More Time
 
-- React best practices and component architecture
-- Proper use of hooks and state management
-- Code organization and reusability
-- UI/UX quality with welcome-ui
-- Testing quality and coverage
-- TypeScript usage and type safety
+- **Proper email service** (via integration)
+- **Candidate accounts** for better duplicate prevention
+- **File upload/s** for resumes/cover letters
+- **Advanced search** with filters UI
+- **Pagination** for large job lists
+- **Welcome-ui v10** for further component integration
+- **E2E tests** with Playwright
+- **Accessibility** (ARIA labels, keyboard navigation)
 
-**Overall (20%):**
+---
 
-- Git commit history and messages
-- Code documentation and comments
-- Problem-solving approach
-- Attention to requirements
+## Running the Project
 
-### Notes
+### Backend
 
-- Take your time and demonstrate your abilities
-- Focus on code quality over quantity
-- Don't hesitate to add comments explaining your decisions
-- If you run out of time, prioritize completing the required tasks over optional ones
-- You can add additional libraries if needed, but justify your choices
+```bash
+cd technical-test-fullstack-main
+mix deps.get
+mix ecto.setup
+mix phx.server
+```
 
-Happy coding and good luck!
+### Frontend
+
+```bash
+cd frontend
+yarn install
+yarn dev
+```
+
+### Tests
+
+```bash
+# Backend
+mix test
+
+# Frontend
+cd frontend
+yarn test
+```
+
+---
+
+## Time Allocation
+
+| Phase                      | Time | Focus                                                 |
+| -------------------------- | ---- | ----------------------------------------------------- |
+| **Setup & Planning**       | 3h   | Requirements analysis, wireframing, environment setup |
+| **Backend Features**       | 9h   | Search, modification log, notifications, bug fixes    |
+| **Frontend Features**      | 10h  | Modals, forms, tables, authentication UI              |
+| **Testing**                | 3h   | Component tests, integration testing                  |
+| **Polish & Documentation** | 2h   | Code cleanup, README, commit history                  |
+
+**Total: ~27 hours over 3 days**
+
+I honestly had a lot of fun working on this task, especially bringing my paper wireframe designs to life in the frontend. Thank you so much for this opportunity; it was a great way to learn a new stack while building something practical :)
